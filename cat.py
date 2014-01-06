@@ -5,32 +5,30 @@ import getopt
 import sys
 
 
-def usage():
-    print("""\
-Usage: cat [OPTION]... [FILE]...
-Concatenate FILE(s), or standard input, to standard output.
-
-  -A, --show-all           equivalent to -vET
-  -b, --number-nonblank    number nonempty output lines, overrides -n
-  -e                       equivalent to -vE
-  -E, --show-ends          display $ at end of each line
-  -n, --number             number all output lines
-  -s, --squeeze-blank      suppress repeated empty output lines
-  -t                       equivalent to -vT
-  -T, --show-tabs          display TAB characters as ^I
-  -u                       (ignored)
-  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB
-      --help     display this help and exit
-      --version  output version information and exit
-
-With no FILE, or when FILE is -, read standard input.
-
-Examples:
-  cat f - g  Output f's contents, then standard input, then g's contents.
-  cat        Copy standard input to standard output.
-
-For complete documentation, run: info coreutils 'cat invocation'\
-""")
+def usage(prog):
+    print("Usage: %s [OPTION]... [FILE]..." % prog)
+    print("Concatenate FILE(s), or standard input, to standard output.")
+    print()
+    print("  -A, --show-all           equivalent to -vET")
+    print("  -b, --number-nonblank    number nonempty output lines, overrides -n")
+    print("  -e                       equivalent to -vE")
+    print("  -E, --show-ends          display $ at end of each line")
+    print("  -n, --number             number all output lines")
+    print("  -s, --squeeze-blank      suppress repeated empty output lines")
+    print("  -t                       equivalent to -vT")
+    print("  -T, --show-tabs          display TAB characters as ^I")
+    print("  -u                       (ignored)")
+    print("  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB")
+    print("      --help     display this help and exit")
+    print("      --version  output version information and exit")
+    print()
+    print("With no FILE, or when FILE is -, read standard input.")
+    print()
+    print("Examples:")
+    print("  cat f - g  Output f's contents, then standard input, then g's contents.")
+    print("  cat        Copy standard input to standard output.")
+    print()
+    print("For complete documentation, run: info coreutils 'cat invocation'")
 
 
 def printable(i):
@@ -98,6 +96,7 @@ def cat(files, b=False, E=False, n=False, s=False, T=False, u=False, v=False):
         f.close()
 
 if __name__ == '__main__':
+    prog = sys.argv[0]
     try:
         opts, args = getopt.getopt(sys.argv[1:], "AbeEnstTuv",
                                    ["show-all",
@@ -110,11 +109,11 @@ if __name__ == '__main__':
                                     "help",
                                     "version"])
     except getopt.GetoptError as wrngopt:
-        common.opterr("cat", wrngopt)
+        common.opterr(prog, wrngopt)
     b = E = n = s = T = u = v = False
     for op, value in opts:
         if op == "--help":
-            usage()
+            usage(prog)
             exit(0)
         elif op == "--version":
             common.version("cat")
