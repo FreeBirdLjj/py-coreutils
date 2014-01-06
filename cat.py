@@ -66,6 +66,8 @@ def cat(files, b=False, E=False, n=False, s=False, T=False, u=False, v=False):
     n |= b
     lineno = 0
     lastlineempty = False
+    if files == []:
+        files = ["-"]
     for fname in files:
         if fname == "-":
             f = sys.stdin
