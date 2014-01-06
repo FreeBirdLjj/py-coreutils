@@ -4,9 +4,10 @@ import common
 import getopt
 import sys
 
+
 def usage():
-    print(
-"""Usage: cat [OPTION]... [FILE]...
+    print("""\
+Usage: cat [OPTION]... [FILE]...
 Concatenate FILE(s), or standard input, to standard output.
 
   -A, --show-all           equivalent to -vET
@@ -28,33 +29,86 @@ Examples:
   cat f - g  Output f's contents, then standard input, then g's contents.
   cat        Copy standard input to standard output.
 
-For complete documentation, run: info coreutils 'cat invocation'"""
-)
+For complete documentation, run: info coreutils 'cat invocation'\
+""")
 
-def cat(files, b = False, E = False, n = False, s = False, T = False, u = False, v = False):
+
+def printable(i):
+    if i == 0:
+        return '\0'
+    if i >= 32:
+        if i < 127:
+            return chr(i)
+        if i == 127:
+            return "^?"
+        if i >= 128 + 32:
+            if i < 128 + 127:
+                return "M-" + chr(i - 128)
+            return "M-^?"
+        return "M-^" + chr(i - 128 + 64)
+    if i == ord('\t'):
+        return "\t"
+    if i == ord('\n'):
+        pass
+    else:
+        return '^' + chr(i + 64)
+
+
+def printablestr(str):
+    sres = ""
+    for ch in str:
+        num = ch
+        sres += printable(num >> 8) + printable(num & 0xFF)
+    return sres
+
+
+def cat(files, b=False, E=False, n=False, s=False, T=False, u=False, v=False):
     n |= b
     lineno = 0
+    lastlineempty = False
     for fname in files:
-        try:
-            f = open(fname, "r")
-        except IOError:
-            print("cat: %s: No such file or directory" %fname)
-            exit(2)
+        if fname == "-":
+            f = sys.stdin
+        else:
+            try:
+                f = open(fname, "r")
+            except IOError:
+                print("cat: %s: No such file or directory" % fname)
+                exit(2)
         for line in f.readlines():
-            line = line[:-1]
-            testb = b and line == ""
+            newline = line[-1] == "\n"
+            line = line.rstrip("\n")
+            lineempty = line == ""
+            if s and lastlineempty and lineempty:
+                continue
+            testb = b and lineempty
             lineno += 0 if testb else 1
-            slineno = "%6d\t" %lineno if (n and not testb) else ""
+            slineno = "%6d\t" % lineno if (n and not testb) else ""
             cend = "$" if E else ""
-            print("%s%s%s" %(slineno, line, cend))
+            if T:
+                line = line.replace("\t", "^I")
+            if v:
+                line = line.encode("UTF-8")
+                line = printablestr(line)
+            LF = "\n" if newline else ""
+            print("%s%s%s" % (slineno, line, cend), end=LF)
+            lastlineempty = lineempty
         f.close()
 
 if __name__ == '__main__':
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "AbeEnstTuv", ["show-all", "number-nonblank", "show-ends", "number", "squeeze-blank", "show-tabs", "show-nonprinting", "help", "version"])
+        opts, args = getopt.getopt(sys.argv[1:], "AbeEnstTuv",
+                                   ["show-all",
+                                    "number-nonblank",
+                                    "show-ends",
+                                    "number",
+                                    "squeeze-blank",
+                                    "show-tabs",
+                                    "show-nonprinting",
+                                    "help",
+                                    "version"])
     except getopt.GetoptError as wrngopt:
         common.opterr("cat", wrngopt)
-        exit(-1)
     b = E = n = s = T = u = v = False
     for op, value in opts:
         if op == "--help":
