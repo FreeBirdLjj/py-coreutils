@@ -4,7 +4,7 @@ A coreutils collection writing in python3
 
 ## Preparation
 
-Make sure that python3 is already installed, and the interpreter is at `/usr/bin/python3`.
+Make sure that python3 is already installed, and `/usr/bin/env` can find the interpreter.
 
 ## How to use them?
 
