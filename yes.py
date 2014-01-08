@@ -10,14 +10,24 @@ def usage(prog):
     print("  or:  %s OPTION" %prog)
     print("Repeatedly output a line with all specified STRING(s), or 'y'.")
     print()
-    print("      --help     display this help and exit")
-    print("      --version  output version information and exit")
+    print("      --help    ",
+          "display this help and exit")
+    print("      --version ",
+          "output version information and exit")
     print()
     print("For complete documentation, run: info coreutils 'yes invocation'")
 
 
 def yes(strs):
-    pass
+    if strs == []:
+        strs = ['y']
+    try:
+        while True:
+            for s in strs:
+                print(s, end='')
+            print()
+    except:
+        pass
 
 
 if __name__ == "__main__":
@@ -30,6 +40,12 @@ if __name__ == "__main__":
         common.opterr(prog, wrngopt)
     if opts == []:
         yes(args)
-    if len(opts) > 1 or args != []:
+    elif len(opts) > 1 or args != []:
         wrngopt = getopt.GetoptError(None, '-')
         common.opterr(prog, wrngopt)
+    else:
+        for op, value in opts:
+            if op == "--help":
+                usage(prog)
+            elif op == "--version":
+                common.version(prog)
