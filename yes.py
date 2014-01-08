@@ -44,7 +44,7 @@ if __name__ == "__main__":
         wrngopt = getopt.GetoptError(None, '-')
         common.opterr(prog, wrngopt)
     else:
-        op, value = opts[0]
+        op = opts[0][0]
         if op == "--help":
             usage(prog)
         elif op == "--version":
