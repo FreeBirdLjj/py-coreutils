@@ -9,24 +9,38 @@ def usage(prog):
     print("Usage: %s [OPTION]... [FILE]..." % prog)
     print("Concatenate FILE(s), or standard input, to standard output.")
     print()
-    print("  -A, --show-all           equivalent to -vET")
-    print("  -b, --number-nonblank    number nonempty output lines, overrides -n")
-    print("  -e                       equivalent to -vE")
-    print("  -E, --show-ends          display $ at end of each line")
-    print("  -n, --number             number all output lines")
-    print("  -s, --squeeze-blank      suppress repeated empty output lines")
-    print("  -t                       equivalent to -vT")
-    print("  -T, --show-tabs          display TAB characters as ^I")
-    print("  -u                       (ignored)")
-    print("  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB")
-    print("      --help     display this help and exit")
-    print("      --version  output version information and exit")
+    print("  -A, --show-all          ",
+          "equivalent to -vET")
+    print("  -b, --number-nonblank   ",
+          "number nonempty output lines, overrides -n")
+    print("  -e                      ",
+          "equivalent to -vE")
+    print("  -E, --show-ends         ",
+          "display $ at end of each line")
+    print("  -n, --number            ",
+          "number all output lines")
+    print("  -s, --squeeze-blank     ",
+          "suppress repeated empty output lines")
+    print("  -t                      ",
+          "equivalent to -vT")
+    print("  -T, --show-tabs         ",
+          "display TAB characters as ^I")
+    print("  -u                      ",
+          "(ignored)")
+    print("  -v, --show-nonprinting  ",
+          "use ^ and M- notation, except for LFD and TAB")
+    print("      --help    ",
+          "display this help and exit")
+    print("      --version ",
+          "output version information and exit")
     print()
     print("With no FILE, or when FILE is -, read standard input.")
     print()
     print("Examples:")
-    print("  cat f - g  Output f's contents, then standard input, then g's contents.")
-    print("  cat        Copy standard input to standard output.")
+    print("  cat f - g ",
+          "Output f's contents, then standard input, then g's contents.")
+    print("  cat       ",
+          "Copy standard input to standard output.")
     print()
     print("For complete documentation, run: info coreutils 'cat invocation'")
 
@@ -88,6 +102,8 @@ def cat(files, b=False, E=False, n=False, s=False, T=False, u=False, v=False):
             if T:
                 line = line.replace("\t", "^I")
             if v:
+                # FIXME: Here line should have be encoded as the same way as f,
+                #        but how?
                 line = line.encode("UTF-8")
                 line = printablestr(line)
             LF = "\n" if newline else ""
