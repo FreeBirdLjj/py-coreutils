@@ -15,7 +15,8 @@ def usage(prog):
     print("      --help     display this help and exit")
     print("      --version  output version information and exit")
     print()
-    print("For complete documentation, run: info coreutils 'factor invocation'")
+    print("For complete documentation, run:",
+          "info coreutils 'factor invocation'")
 
 
 def factor(num):
@@ -41,7 +42,8 @@ def factorstr(prog, nums):
                         i = int(num)
                         factor(i)
                     except ValueError:
-                        print("%s: '%s' is not a valid positive integer" % (prog, num))
+                        print("%s: '%s' is not a valid positive integer"
+                              % (prog, num))
         except EOFError:
             pass
     else:
