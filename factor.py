@@ -2,6 +2,7 @@
 
 import common
 import getopt
+import math
 import re
 import sys
 
@@ -20,15 +21,12 @@ def usage(prog):
 
 
 def factor(num):
-    print("%d:" % num, sep='', end='')
-    i = 2
-    while i * i <= num:
+    print("%d:" % num, end='')
+    for i in range(2, int(math.sqrt(num)) + 1):
         if num % i == 0:
-            print(" %d" % i, sep='', end='')
+            print(" %d" % i, end='')
             num //= i
-        i += 1
-    if num > 1:
-        print(" %d" % num, sep='')
+    print(" %d" % num if num > 1 else "")
 
 
 def factorstr(prog, nums):
