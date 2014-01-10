@@ -16,7 +16,8 @@ def usage(prog):
     print("      --version ",
           "output version information and exit")
     print()
-    print("For complete documentation, run: info coreutils 'whoami invocation'")
+    print("For complete documentation, run:",
+          "info coreutils 'whoami invocation'")
 
 
 def whoami():

@@ -7,7 +7,7 @@ import sys
 
 def usage(prog):
     print("Usage: %s [STRING]..." % prog)
-    print("  or:  %s OPTION" %prog)
+    print("  or:  %s OPTION" % prog)
     print("Repeatedly output a line with all specified STRING(s), or 'y'.")
     print()
     print("      --help    ",
