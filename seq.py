@@ -36,3 +36,33 @@ def usage(prog):
 
 if __name__ == "__main__":
     prog = sys.argv[0]
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "f:s:w",
+                                   ["format=",
+                                    "separator=",
+                                    "equal-width",
+                                    "help",
+                                    "version"])
+    except getopt.GetoptError as wrngopt:
+        common.opterr(prog, wrngopt)
+    if opts == args == []:
+        print("%s: missing operand" % prog)
+        print("Try 'seq --help' for more information")
+        exit(-1)
+    if len(args) == 1:
+        first = 1
+        increment = 1
+        last = int(args[0])
+    elif len(args) == 2:
+        first = int(args[0])
+        increment = 1
+        last = int(args[1])
+    elif len(args) == 3:
+        first = int(args[0])
+        increment = int(args[1])
+        last = int(args[2])
+    else:
+        print("%s: extra operand '%s'" % (prog, args[3]))
+        print("Try '%s --help' for more information" % prog)
+        exit(-1)
+    print(first, increment, last)
