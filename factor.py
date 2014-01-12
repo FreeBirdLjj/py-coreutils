@@ -34,7 +34,7 @@ def factorstr(prog, nums):
         try:
             while True:
                 s = input()
-                nums = re.split("\s+", s)
+                nums = re.split("\\s+", s)
                 for num in nums:
                     try:
                         i = int(num)

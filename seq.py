@@ -2,6 +2,7 @@
 
 import common
 import getopt
+import re
 import sys
 
 
@@ -34,8 +35,35 @@ def usage(prog):
     print("For complete documentation, run:",
           "info coreutils 'seq invocation'")
 
+
+def argtonum(prog, arg):
+    try:
+        num = int(arg)
+    except ValueError:
+        try:
+            num = float(arg)
+        except ValueError:
+            print("%s: invalid floating point argument: %s" % (prog, errarg),
+                    file=sys.stderr)
+            print("Try: '%s --help' for more information" % prog,
+                    file=sys.stderr)
+            exit(-1)
+    return num
+
+
+def seq(first, increment, last, fmt="%g", separator="\n", equalwidth=False):
+    i = first
+    while last <= i <= first or first <= i <= last:
+        try:
+            print(fmt % i, separator, end='')
+        except TypeError:
+            print("Error format string", file=stderr)
+        i += increment
+
 if __name__ == "__main__":
     prog = sys.argv[0]
+
+    # FIXME: Can't resolve negative numbers.
     try:
         opts, args = getopt.getopt(sys.argv[1:], "f:s:w",
                                    ["format=",
@@ -45,24 +73,44 @@ if __name__ == "__main__":
                                     "version"])
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
+
     if opts == args == []:
-        print("%s: missing operand" % prog)
-        print("Try 'seq --help' for more information")
+        print("%s: missing operand" % prog, file=sys.stderr)
+        print("Try 'seq --help' for more information", file=sys.stderr)
         exit(-1)
     if len(args) == 1:
         first = 1
         increment = 1
-        last = int(args[0])
+        last = argtonum(prog, args[0])
     elif len(args) == 2:
-        first = int(args[0])
+        first = argtonum(prog, args[0])
         increment = 1
-        last = int(args[1])
+        last = argtonum(prog, args[1])
     elif len(args) == 3:
-        first = int(args[0])
-        increment = int(args[1])
-        last = int(args[2])
+        first = argtonum(prog, args[0])
+        increment = argtonum(prog, args[1])
+        last = argtonum(prog, args[2])
     else:
-        print("%s: extra operand '%s'" % (prog, args[3]))
-        print("Try '%s --help' for more information" % prog)
+        print("%s: extra operand '%s'" % (prog, args[3]), file=sys.stderr)
+        print("Try '%s --help' for more information" % prog, file=sys.stderr)
         exit(-1)
-    print(first, increment, last)
+
+    fmt = "%g"
+    separator = "\n"
+    equalwidth = False
+
+    for op, value in opts:
+        if op == "-f" or op == "--format":
+            fmt = value
+        elif op == "-s" or op == "--separator":
+            separator = value
+        elif op == "-w" or op == "--equal-width":
+            equalwidth = True
+        elif op == "--help":
+            usage(prog)
+            exit(0)
+        elif op == "--version":
+            common.version(prog)
+            exit(0)
+
+    seq(first, increment, last, fmt, separator, equalwidth)
