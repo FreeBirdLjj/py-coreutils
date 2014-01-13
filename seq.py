@@ -53,11 +53,34 @@ def argtonum(prog, arg):
 
 def seq(first, increment, last, fmt="%g", separator="\n", equalwidth=False):
     i = first
+    if equalwidth:
+        nums = [first, increment, last]
+        lensi = list(map(lambda x: len("%d" % x), nums))
+        lensf = list(map(lambda x: len("%g" % x), nums))
+        maxleni = max(lensi)
+        maxlenf = max(map(lambda a, b: a-b, lensf, lensi))
     while last <= i <= first or first <= i <= last:
-        try:
-            print(fmt % i, separator, end='')
-        except TypeError:
-            print("Error format string", file=stderr)
+        if equalwidth:
+            si = "%d" % i
+            lensi = len(si)
+            sf = "%g" % i
+            lensf = len(sf) - lensi
+            if lensi < maxleni:
+                for j in range(maxleni - lensi):
+                    sf = "0" + sf
+            if len(sf) - maxleni < maxlenf:
+                if lensf == 0:
+                    sf += "."
+                    lensf = 1
+                for j in range(maxlenf - lensf):
+                    sf += "0"
+                s = sf
+        else:
+            try:
+                s = fmt % i
+            except TypeError:
+                print("Error format string", file=sys.stderr)
+        print(s, separator, end='')
         i += increment
 
 if __name__ == "__main__":
@@ -95,7 +118,7 @@ if __name__ == "__main__":
         print("Try '%s --help' for more information" % prog, file=sys.stderr)
         exit(-1)
 
-    fmt = "%g"
+    fmt = None
     separator = "\n"
     equalwidth = False
 
@@ -113,4 +136,7 @@ if __name__ == "__main__":
             common.version(prog)
             exit(0)
 
+    if equalwidth and fmt:
+        print("%s: format string may not be specified when printing equal width strings" % prog, file=sys.stderr)
+        print("Try '%s --help' for more information." % prog, file=sys.stderr)
     seq(first, increment, last, fmt, separator, equalwidth)
