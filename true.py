@@ -15,11 +15,14 @@ def usage(prog):
     print("      --version ",
           "output version information and exit")
     print()
-    print("NOTE: your shell may have its own version of true, which usually supersedes")
-    print("the version described here.  Please refer to your shell's documentation")
+    print("NOTE: your shell may have its own version of true,",
+          "which usually supersedes")
+    print("the version described here. ",
+          "Please refer to your shell's documentation")
     print("for details about the options it supports.")
     print()
-    print("For complete documentation, run: info coreutils 'true invocation'")
+    print("For complete documentation, run:",
+          "info coreutils 'true invocation'")
 
 if __name__ == "__main__":
     prog = sys.argv[0]
