@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import common
 import getopt
 import sys
 
@@ -25,3 +26,19 @@ def usage(prog):
 
 if __name__ == "__main__":
     prog = sys.argv[0]
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "",
+                                   ["help",
+                                    "version"])
+    except getopt.GetoptError as wrngopt:
+        exit(-1)
+
+    if len(opts) == 1 and args == []:
+        op = opts[0][0]
+        if op == "--version":
+            common.version(prog)
+        elif op == "--help":
+            usage(prog)
+    else:
+        exit(-1)
