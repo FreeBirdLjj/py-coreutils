@@ -25,6 +25,9 @@ def usage(prog):
     print("For complete documentation, run: info coreutils 'dirname invocation'")
 
 
+def dirname(files):
+    return []
+
 if __name__ == "__main__":
     prog = sys.argv[0]
 
@@ -37,3 +40,22 @@ if __name__ == "__main__":
         common.opterr(prog, wrngopt)
 
     z = False
+    for op, value in opts:
+        if op == "--help":
+            usage(prog)
+            exit(0)
+        elif op == "--version":
+            common.version(prog)
+            exit(0)
+        elif op == "-z" or op == "--zero":
+            z = true
+
+    if args == []:
+        print("%s: missing operand" % prog)
+        print("Try '%s --help' for more information" % prog)
+    else:
+        for s in dirname(args):
+            if z:
+                print(s, end='')
+            else:
+                print(s)
