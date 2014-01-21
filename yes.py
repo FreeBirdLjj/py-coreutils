@@ -26,7 +26,7 @@ def yes(strs):
             for s in strs:
                 print(s, end='')
             print()
-    except:
+    except KeyboardInterrupt:
         pass
 
 
