@@ -33,6 +33,9 @@ def dirname(paths):
         lastslash = path.rfind('/')
         if lastslash == -1:
             return '.'
+        elif lastslash == 0:
+            # root
+            return '/'
         else:
             return path[:lastslash]
     pool = ThreadPool()
