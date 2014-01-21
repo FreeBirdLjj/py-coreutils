@@ -21,12 +21,14 @@ def usage(prog):
 
 
 def factor(num):
-    print("%d:" % num, end='')
+    result = []
     for i in range(2, int(math.sqrt(num)) + 1):
-        if num % i == 0:
-            print(" %d" % i, end='')
+        while num % i == 0:
             num //= i
-    print(" %d" % num if num > 1 else "")
+            result.append(i)
+    if num > 1:
+        result.append(num)
+    return result
 
 
 def factorstr(prog, nums):
@@ -38,7 +40,10 @@ def factorstr(prog, nums):
                 for num in nums:
                     try:
                         i = int(num)
-                        factor(i)
+                        print("%d:" % i, end='')
+                        for j in factor(i):
+                            print(" %d" % j, end='')
+                        print()
                     except ValueError:
                         print("%s: '%s' is not a valid positive integer"
                               % (prog, num))
@@ -48,7 +53,10 @@ def factorstr(prog, nums):
         for num in nums:
             try:
                 i = int(num)
-                factor(i)
+                print("%d:" % i, end='')
+                for j in factor(i):
+                    print(" %d" % j, end='')
+                print()
             except ValueError:
                 print("%s: '%s' is not a valid positive integer" % (prog, num))
 
