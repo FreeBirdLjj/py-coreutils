@@ -4,9 +4,6 @@ import common
 import getopt
 import sys
 
-from multiprocessing import Pool
-from multiprocessing.dummy import Pool as ThreadPool
-
 
 def usage(prog):
     print("Usage: %s [OPTION] NAME..." % prog)
@@ -41,11 +38,7 @@ def dirname(paths):
             return '/'
         else:
             return path[:lastslash]
-    pool = ThreadPool()
-    result = pool.map(_dirname, paths)
-    pool.close()
-    pool.join()
-    return result
+    return map(_dirname, paths)
 
 if __name__ == "__main__":
     prog = sys.argv[0]
