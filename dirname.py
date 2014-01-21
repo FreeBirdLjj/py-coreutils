@@ -2,16 +2,18 @@
 
 import common
 import getopt
-import re
 import sys
 
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
+
 def usage(prog):
     print("Usage: %s [OPTION] NAME..." % prog)
     print("Output each NAME with its last non-slash component and trailing slashes")
-    print("removed; if NAME contains no /'s, output '.' (meaning the current directory).")
+    print("removed;",
+          "if NAME contains no /'s,",
+          "output '.' (meaning the current directory).")
     print()
     print("  -z, --zero    ",
           "separate output with NUL rather than newline")
@@ -25,7 +27,8 @@ def usage(prog):
     print("  dirname dir1/str dir2/str  -> \"dir1\" followed by \"dir2\"")
     print("  dirname stdio.h            -> \".\"")
     print()
-    print("For complete documentation, run: info coreutils 'dirname invocation'")
+    print("For complete documentation, run:",
+          "info coreutils 'dirname invocation'")
 
 
 def dirname(paths):
