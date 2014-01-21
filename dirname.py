@@ -2,8 +2,11 @@
 
 import common
 import getopt
+import re
 import sys
 
+from multiprocessing import Pool
+from multiprocessing.dummy import Pool as ThreadPool
 
 def usage(prog):
     print("Usage: %s [OPTION] NAME..." % prog)
@@ -25,8 +28,18 @@ def usage(prog):
     print("For complete documentation, run: info coreutils 'dirname invocation'")
 
 
-def dirname(files):
-    return []
+def dirname(paths):
+    def _dirname(path):
+        lastslash = path.rfind('/')
+        if lastslash == -1:
+            return '.'
+        else:
+            return path[:lastslash]
+    pool = ThreadPool()
+    result = pool.map(_dirname, paths)
+    pool.close()
+    pool.join()
+    return result
 
 if __name__ == "__main__":
     prog = sys.argv[0]
@@ -48,7 +61,7 @@ if __name__ == "__main__":
             common.version(prog)
             exit(0)
         elif op == "-z" or op == "--zero":
-            z = true
+            z = True
 
     if args == []:
         print("%s: missing operand" % prog)
