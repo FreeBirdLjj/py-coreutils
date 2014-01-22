@@ -60,23 +60,20 @@ def seq(first, increment, last, fmt="%g", separator="\n", equalwidth=False):
         lensi = list(map(lambda x: len("%d" % x), nums))
         lensf = list(map(lambda x: len("%g" % x), nums))
         maxleni = max(lensi)
-        maxlenf = max(map(lambda a, b: a-b, lensf, lensi))
+        maxlenf = max(map(lambda a, b: a - b, lensf, lensi))
     while last <= i <= first or first <= i <= last:
         if equalwidth:
             si = "%d" % i
             lensi = len(si)
             sf = "%g" % i
             lensf = len(sf) - lensi
-            if lensi < maxleni:
-                for j in range(maxleni - lensi):
-                    sf = "0" + sf
-            if len(sf) - maxleni < maxlenf:
+            sf = "0" * (maxleni - lensi) + sf
+            if len(sf) < maxleni + maxlenf:
                 if lensf == 0:
                     sf += "."
                     lensf = 1
-                for j in range(maxlenf - lensf):
-                    sf += "0"
-                s = sf
+                sf += "0" * (maxlenf - lensf)
+            s = sf
         else:
             try:
                 s = fmt % i
