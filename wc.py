@@ -76,7 +76,12 @@ def wc(files, c=True, m=False, l=True, L=False, w=True):
             if filename == "-":
                 f = sys.stdin
             else:
-                f = open(filename)
+                try:
+                    f = open(filename)
+                except FileNotFoundError:
+                    print("%s: %s: No such file or directory"
+                          % (prog, filename))
+                    exit(-1)
             lines = f.readlines()
             if l:
                 lcnt = len(lines)
