@@ -36,8 +36,9 @@ if __name__ == "__main__":
 
     if args != [] or len(opts) > 1:
         exit(0)
-    op = opts[0][0]
-    if op == "--help":
-        usage(prog)
-    elif op == "--version":
-        common.version(prog)
+    if opts != []:
+        op = opts[0][0]
+        if op == "--help":
+            usage(prog)
+        elif op == "--version":
+            common.version(prog)
