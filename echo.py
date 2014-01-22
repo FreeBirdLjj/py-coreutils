@@ -37,8 +37,10 @@ def usage(prog):
     print("  \\0NNN   byte with octal value NNN (1 to 3 digits)")
     print("  \\xHH    byte with hexadecimal value HH (1 to 2 digits)")
     print()
-    print("NOTE: your shell may have its own version of echo, which usually supersedes")
-    print("the version described here.  Please refer to your shell's documentation")
+    print("NOTE: your shell may have its own version of echo,",
+          "which usually supersedes")
+    print("the version described here. ",
+          "Please refer to your shell's documentation")
     print("for details about the options it supports.")
     print()
     print("For complete documentation, run:",
@@ -67,11 +69,15 @@ def echo(strs, n=False, e=False):
             octdetres = re.findall(octdet, s)
             if octdetres != []:
                 for octs in octdetres:
-                    s = s.replace(octs, chr(ctoa[octs[-1]]+(ctoa[octs[-2]]<<3)+(ctoa[octs[-3]]<<6)))
+                    newc = chr(ctoa[octs[-1]] +
+                               (ctoa[octs[-2]] << 3) +
+                               (ctoa[octs[-3]] << 6))
+                    s = s.replace(octs, newc)
             hexdetres = re.findall(hexdet, s)
             if hexdetres != []:
                 for hexs in hexdetres:
-                    s = s.replace(hexs, chr(ctoa[hexs[-1]]+(ctoa[hexs[-2]]<<4)))
+                    newc = chr(ctoa[hexs[-1]] + (ctoa[hexs[-2]] << 4))
+                    s = s.replace(hexs, newc)
             eofp = s.find("\\c")
             if eofp != -1:
                 print(s[:eofp], end=endl)

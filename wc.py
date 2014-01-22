@@ -10,12 +10,17 @@ import sys
 def usage(prog):
     print("Usage: %s [OPTION]... [FILE]..." % prog)
     print("  or:  %s [OPTION]... --files0-from=F" % prog)
-    print("Print newline, word, and byte counts for each FILE, and a total line if")
-    print("more than one FILE is specified.  With no FILE, or when FILE is -,")
-    print("read standard input.  A word is a non-zero-length sequence of characters")
+    print("Print newline, word, and byte counts for each FILE,",
+          "and a total line if")
+    print("more than one FILE is specified. ",
+          "With no FILE, or when FILE is -,")
+    print("read standard input. ",
+          "A word is a non-zero-length sequence of characters")
     print("delimited by white space.")
-    print("The options below may be used to select which counts are printed, always in")
-    print("the following order: newline, word, character, byte, maximum line length.")
+    print("The options below may be used to select which counts are printed,",
+          "always in")
+    print("the following order:",
+          "newline, word, character, byte, maximum line length.")
     print("  -c, --bytes           ",
           "print the byte counts")
     print("  -m, --chars           ",
@@ -24,8 +29,10 @@ def usage(prog):
           "print the newline counts")
     print("      --files0-from=F   ",
           "read input from the files specified by")
-    print("                           NUL-terminated names in file F;")
-    print("                           If F is - then read names from standard input")
+    print("                          ",
+          "NUL-terminated names in file F;")
+    print("                          ",
+          "If F is - then read names from standard input")
     print("  -L, --max-line-length ",
           "print the length of the longest line")
     print("  -w, --words           ",
@@ -42,22 +49,22 @@ def usage(prog):
 def wc(files, c=True, m=False, l=True, L=False, w=True):
     if files == []:
         f = sys.stdin
-        buffer = f.readlines()
+        lines = f.readlines()
         if l:
-            lcnt = len(buffer)
+            lcnt = len(lines)
             print(" %d" % lcnt, end='')
         if w:
-            wcnt = numpy.sum(list(map(lambda s: len(s.split()), buffer)))
+            wcnt = numpy.sum(list(map(lambda s: len(s.split()), lines)))
             print(" %d" % wcnt, end='')
         if m:
-            ccnt = numpy.sum(list(map(len, buffer)))
+            ccnt = numpy.sum(list(map(len, lines)))
             print(" %d" % ccnt, end='')
         if c:
-            bcnt = numpy.sum(list(map(lambda s: len(s.encode()), buffer)))
+            bcnt = numpy.sum(list(map(lambda s: len(s.encode()), lines)))
             print(" %d" % bcnt, end='')
         if L:
-            maxline = buffer.index(max(buffer, key=lambda s: len(s.encode())))
-            s = buffer[maxline].strip('\n').encode()
+            maxlno = lines.index(max(lines, key=lambda s: len(s.encode())))
+            s = lines[maxlno].strip('\n').encode()
             lens = len(s)
             lenunansi = len(list(filter(lambda x: x >= 0x80, s)))
             maxl = lens - lenunansi / 3
@@ -70,17 +77,17 @@ def wc(files, c=True, m=False, l=True, L=False, w=True):
                 f = sys.stdin
             else:
                 f = open(filename)
-            buffer = f.readlines()
+            lines = f.readlines()
             if l:
-                lcnt = len(buffer)
+                lcnt = len(lines)
                 totall += lcnt
                 print(" %d" % lcnt, end='')
             if w:
-                wcnt = numpy.sum(list(map(lambda s: len(s.split()), buffer)))
+                wcnt = numpy.sum(list(map(lambda s: len(s.split()), lines)))
                 totalw += wcnt
                 print(" %d" % wcnt, end='')
             if m:
-                ccnt = numpy.sum(list(map(len, buffer)))
+                ccnt = numpy.sum(list(map(len, lines)))
                 totalm += ccnt
                 print(" %d" % ccnt, end='')
             if c:
@@ -88,8 +95,8 @@ def wc(files, c=True, m=False, l=True, L=False, w=True):
                 totalc += bcnt
                 print(" %d" % bcnt, end='')
             if L:
-                maxline = buffer.index(max(buffer, key=lambda s: len(s.encode())))
-                s = buffer[maxline].strip('\n').encode()
+                maxlno = lines.index(max(lines, key=lambda s: len(s.encode())))
+                s = lines[maxlno].strip('\n').encode()
                 lens = len(s)
                 lenunansi = len(list(filter(lambda x: x >= 0x80, s)))
                 maxl = lens - lenunansi / 3

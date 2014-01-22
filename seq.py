@@ -25,11 +25,13 @@ def usage(prog):
     print()
     print("If FIRST or INCREMENT is omitted, it defaults to 1.  That is, an")
     print("omitted INCREMENT defaults to 1 even when LAST is smaller than FIRST.")
-    print("FIRST, INCREMENT, and LAST are interpreted as floating point values.")
+    print("FIRST, INCREMENT,",
+          "and LAST are interpreted as floating point values.")
     print("INCREMENT is usually positive if FIRST is smaller than LAST, and")
     print("INCREMENT is usually negative if FIRST is greater than LAST.")
     print("FORMAT must be suitable for printing one argument of type 'double';")
-    print("it defaults to %.PRECf if FIRST, INCREMENT, and LAST are all fixed point")
+    print("it defaults to %.PRECf if FIRST, INCREMENT,",
+          "and LAST are all fixed point")
     print("decimal numbers with maximum precision PREC, and to %g otherwise.")
     print()
     print("For complete documentation, run:",
@@ -44,9 +46,9 @@ def argtonum(prog, arg):
             num = float(arg)
         except ValueError:
             print("%s: invalid floating point argument: %s" % (prog, errarg),
-                    file=sys.stderr)
+                  file=sys.stderr)
             print("Try: '%s --help' for more information" % prog,
-                    file=sys.stderr)
+                  file=sys.stderr)
             exit(-1)
     return num
 

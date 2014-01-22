@@ -60,7 +60,8 @@ if __name__ == "__main__":
     if opts != []:
         if len(sys.argv) > 2:
             print("%s: invalid option -- '-'" % prog, file=sys.stderr)
-            print("Try '%s --help' for more information." % prog, file=sys.stderr)
+            print("Try '%s --help' for more information." % prog,
+                  file=sys.stderr)
             exit(-1)
         op = opts[0][0]
         if op == "--help":
