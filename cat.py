@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import common
+import functools
 import getopt
 import sys
 
@@ -67,11 +68,9 @@ def printable(i):
 
 
 def printablestr(str):
-    sres = ""
-    for ch in str:
-        num = ch
-        sres += printable(num >> 8) + printable(num & 0xFF)
-    return sres
+    return functools.reduce(lambda s, c: s + printable(c >> 8)
+                                           + printable(c & 0xFF),
+                            str, "")
 
 
 def cat(files, b=False, E=False, n=False, s=False, T=False, u=False, v=False):

@@ -41,8 +41,8 @@ def factorstr(prog, nums):
                     try:
                         i = int(num)
                         print("%d:" % i, end='')
-                        for j in factor(i):
-                            print(" %d" % j, end='')
+                        result = factor(i)
+                        list(map(lambda j: print(" %d" % j, end=''), result))
                         print()
                     except ValueError:
                         print("%s: '%s' is not a valid positive integer"
@@ -54,8 +54,8 @@ def factorstr(prog, nums):
             try:
                 i = int(num)
                 print("%d:" % i, end='')
-                for j in factor(i):
-                    print(" %d" % j, end='')
+                result = factor(i)
+                list(map(lambda j: print(" %d" % j, end=''), result))
                 print()
             except ValueError:
                 print("%s: '%s' is not a valid positive integer" % (prog, num))
