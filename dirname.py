@@ -2,6 +2,8 @@
 
 import common
 import getopt
+import os
+import os.path
 import sys
 
 
@@ -30,14 +32,11 @@ def usage(prog):
 
 def dirname(paths):
     def _dirname(path):
-        lastslash = path.rfind('/')
-        if lastslash == -1:
+        result = os.path.dirname(path)
+        if result == '':
             return '.'
-        elif lastslash == 0:
-            # root
-            return '/'
         else:
-            return path[:lastslash]
+            return result
     return map(_dirname, paths)
 
 if __name__ == "__main__":
