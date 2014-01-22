@@ -2,6 +2,7 @@
 
 import common
 import getopt
+import numpy
 import os.path
 import sys
 
@@ -25,7 +26,8 @@ def usage(prog):
           "read input from the files specified by")
     print("                           NUL-terminated names in file F;")
     print("                           If F is - then read names from standard input")
-    print("  -L, --max-line-length  print the length of the longest line")
+    print("  -L, --max-line-length ",
+          "print the length of the longest line")
     print("  -w, --words           ",
           "print the word counts")
     pinrt("      --help    ",
@@ -35,6 +37,78 @@ def usage(prog):
     print()
     print("For complete documentation, run:",
           "info coreutils 'wc invocation'")
+
+
+def wc(files, c=True, m=False, l=True, L=False, w=True):
+    if files == []:
+        f = sys.stdin
+        buffer = f.readlines()
+        if l:
+            lcnt = len(buffer)
+            print(" %d" % lcnt, end='')
+        if w:
+            wcnt = numpy.sum(list(map(lambda s: len(s.split()), buffer)))
+            print(" %d" % wcnt, end='')
+        if m:
+            ccnt = numpy.sum(list(map(len, buffer)))
+            print(" %d" % ccnt, end='')
+        if c:
+            bcnt = numpy.sum(list(map(lambda s: len(s.encode()), buffer)))
+            print(" %d" % bcnt, end='')
+        if L:
+            maxline = buffer.index(max(buffer, key=lambda s: len(s.encode())))
+            s = buffer[maxline].strip('\n').encode()
+            lens = len(s)
+            lenunansi = len(list(filter(lambda x: x >= 0x80, s)))
+            maxl = lens - lenunansi / 3
+            print(" %d" % maxl, end='')
+        print()
+    else:
+        totall = totalw = totalm = totalc = totalL = 0
+        for filename in files:
+            if filename == "-":
+                f = sys.stdin
+            else:
+                f = open(filename)
+            buffer = f.readlines()
+            if l:
+                lcnt = len(buffer)
+                totall += lcnt
+                print(" %d" % lcnt, end='')
+            if w:
+                wcnt = numpy.sum(list(map(lambda s: len(s.split()), buffer)))
+                totalw += wcnt
+                print(" %d" % wcnt, end='')
+            if m:
+                ccnt = numpy.sum(list(map(len, buffer)))
+                totalm += ccnt
+                print(" %d" % ccnt, end='')
+            if c:
+                bcnt = os.path.getsize(filename)
+                totalc += bcnt
+                print(" %d" % bcnt, end='')
+            if L:
+                maxline = buffer.index(max(buffer, key=lambda s: len(s.encode())))
+                s = buffer[maxline].strip('\n').encode()
+                lens = len(s)
+                lenunansi = len(list(filter(lambda x: x >= 0x80, s)))
+                maxl = lens - lenunansi / 3
+                totalL = max(maxl, totalL)
+                print(" %d" % maxl, end='')
+            print(" %s" % filename)
+        if len(files) > 1:
+            if l:
+                print(" %d" % totall, end='')
+            if w:
+                print(" %d" % totalw, end='')
+            if m:
+                print(" %d" % totalm, end='')
+            if c:
+                print(" %d" % totalc, end='')
+            if L:
+                print(" %d" % totalL, end='')
+            print(" total")
+
 
 if __name__ == "__main__":
     prog = sys.argv[0]
@@ -74,3 +148,4 @@ if __name__ == "__main__":
             elif op == "-w" or op == "--words":
                 w = True
 
+    wc(args, c, m, l, L, w)
