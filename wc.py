@@ -2,6 +2,7 @@
 
 import common
 import getopt
+import os.path
 import sys
 
 
@@ -50,3 +51,26 @@ if __name__ == "__main__":
                                     "version"])
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
+
+    c = m = l = L = w = False
+    if opts == []:
+        l = w = c = True
+    else:
+        for op, value in opts:
+            if op == "--help":
+                usage(prog)
+                exit(0)
+            elif op == "--version":
+                common.version(prog)
+                exit(0)
+            elif op == "-c" or op == "--bytes":
+                c = True
+            elif op == "-m" or op == "--chars":
+                m = True
+            elif op == "-l" or op == "--lines":
+                l = True
+            elif op == "-L" or op == "--max-line-length":
+                L = True
+            elif op == "-w" or op == "--words":
+                w = True
+
