@@ -54,18 +54,14 @@ def echo(strs, n=False, e=False):
             '6': 0x6, '7': 0x7, '8': 0x8, '9': 0x9, 'A': 0xA, 'a': 0xA,
             'B': 0xB, 'b': 0xB, 'C': 0xC, 'c': 0xC, 'D': 0xD, 'd': 0xD,
             'E': 0xE, 'e': 0xE, 'F': 0xF, 'f': 0xF}
+    escseq = (("\\\\", '\\'), ("\\a", '\a'), ("\\b", '\b'), ("\\e", '\033'),
+              ("\\f", '\f'), ("\\n", '\n'), ("\\r", '\r'), ("\\t", '\t'),
+              ("\\v", '\v'))
     endl = '' if n else '\n'
     for s in strs:
         if e:
-            s = s.replace("\\\\", '\\')
-            s = s.replace("\\a", '\a')
-            s = s.replace("\\b", '\b')
-            s = s.replace("\\e", '\033')
-            s = s.replace("\\f", '\f')
-            s = s.replace("\\n", '\n')
-            s = s.replace("\\r", '\r')
-            s = s.replace("\\t", '\t')
-            s = s.replace("\\v", '\v')
+            for c, escc in escseq:
+                s = s.replace(c, escc)
             octdetres = re.findall(octdet, s)
             if octdetres != []:
                 for octs in octdetres:
