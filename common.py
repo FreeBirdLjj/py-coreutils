@@ -12,5 +12,5 @@ def opterr(prog, wrngopt):
 
 
 def ferr(prog, file):
-    print("%s: %s: No such file or directory", % (prog, file), file=sys.stderr)
+    print("%s: %s: No such file or directory" % (prog, file), file=sys.stderr)
     exit(2)
