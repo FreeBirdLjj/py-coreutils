@@ -131,7 +131,9 @@ if __name__ == "__main__":
             common.version(prog)
             exit(0)
 
-    if equalwidth and fmt:
+    if equalwidth and fmt != None:
         print("%s: format string may not be specified when printing equal width strings" % prog, file=sys.stderr)
         print("Try '%s --help' for more information." % prog, file=sys.stderr)
+    elif (not equalwidth) and fmt == None:
+        fmt = "%g"
     seq(first, increment, last, fmt, separator, equalwidth)
