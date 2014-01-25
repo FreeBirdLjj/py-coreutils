@@ -33,9 +33,7 @@ if __name__ == "__main__":
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
     if args != []:
-        print("%s: extra operand '%s'" % (prog, args[0]))
-        print("Try '%s --help' for more information." % prog)
-        exit(-1)
+        common.extraop(prog, args[0])
     if len(opts) > 1:
         wrngopt = getopt.GetoptError(None, '-')
         common.opterr(prog, wrngopt)

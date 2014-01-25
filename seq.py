@@ -111,9 +111,7 @@ if __name__ == "__main__":
         increment = argtonum(prog, args[1])
         last = argtonum(prog, args[2])
     else:
-        print("%s: extra operand '%s'" % (prog, args[3]), file=sys.stderr)
-        print("Try '%s --help' for more information" % prog, file=sys.stderr)
-        exit(-1)
+        common.extraop(prog, args[3])
 
     fmt = None
     separator = "\n"
