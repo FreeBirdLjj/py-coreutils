@@ -86,8 +86,7 @@ def cat(files, b=False, E=False, n=False, s=False, T=False, u=False, v=False):
             try:
                 f = open(fname, "r")
             except IOError:
-                print("cat: %s: No such file or directory" % fname)
-                exit(2)
+                common.ferr(prog, fname)
         for line in f.readlines():
             newline = line[-1] == "\n"
             line = line.rstrip("\n")

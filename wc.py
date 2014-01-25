@@ -79,9 +79,7 @@ def wc(files, c=True, m=False, l=True, L=False, w=True):
                 try:
                     f = open(filename)
                 except FileNotFoundError:
-                    print("%s: %s: No such file or directory"
-                          % (prog, filename), file=sys.stderr)
-                    exit(-1)
+                    common.ferr(prog, filename)
             lines = f.readlines()
             if l:
                 lcnt = len(lines)
@@ -177,9 +175,7 @@ if __name__ == "__main__":
                         try:
                             f = open(value)
                         except FileNotFoundError:
-                            print("%s: %s: No such file or directory"
-                                  % (prog, value), file=sys.stderr)
-                            exit(-1)
+                            common.ferr(prog, value)
                     args = f.read().split('\0')
 
     wc(args, c, m, l, L, w)
