@@ -48,19 +48,39 @@ def usage(prog):
 
 def wc(files, c=True, m=False, l=True, L=False, w=True):
     if files == []:
-        f = sys.stdin
+        hasname = False
+        files = ["-"]
+    else:
+        hasname = True
+    totall = totalw = totalm = totalc = totalL = 0
+    for filename in files:
+        if filename == "-":
+            f = sys.stdin
+        else:
+            try:
+                f = open(filename)
+            except FileNotFoundError:
+                common.ferr(prog, filename)
         lines = f.readlines()
         if l:
             lcnt = len(lines)
+            totall += lcnt
             print(" %d" % lcnt, end='')
         if w:
             wcnt = numpy.sum(list(map(lambda s: len(s.split()), lines)))
+            totalw += wcnt
             print(" %d" % wcnt, end='')
         if m:
             ccnt = numpy.sum(list(map(len, lines)))
+            totalm += ccnt
             print(" %d" % ccnt, end='')
         if c:
-            bcnt = numpy.sum(list(map(lambda s: len(s.encode()), lines)))
+            if filename == "-":
+                bcnt = numpy.sum(list(map(lambda s: len(s.encode()),
+                                          lines)))
+            else:
+                bcnt = os.path.getsize(filename)
+            totalc += bcnt
             print(" %d" % bcnt, end='')
         if L:
             maxlno = lines.index(max(lines, key=lambda s: len(s.encode())))
@@ -68,56 +88,24 @@ def wc(files, c=True, m=False, l=True, L=False, w=True):
             lens = len(s)
             lenunansi = len(list(filter(lambda x: x >= 0x80, s)))
             maxl = lens - lenunansi / 3
+            totalL = max(maxl, totalL)
             print(" %d" % maxl, end='')
-        print()
-    else:
-        totall = totalw = totalm = totalc = totalL = 0
-        for filename in files:
-            if filename == "-":
-                f = sys.stdin
-            else:
-                try:
-                    f = open(filename)
-                except FileNotFoundError:
-                    common.ferr(prog, filename)
-            lines = f.readlines()
-            if l:
-                lcnt = len(lines)
-                totall += lcnt
-                print(" %d" % lcnt, end='')
-            if w:
-                wcnt = numpy.sum(list(map(lambda s: len(s.split()), lines)))
-                totalw += wcnt
-                print(" %d" % wcnt, end='')
-            if m:
-                ccnt = numpy.sum(list(map(len, lines)))
-                totalm += ccnt
-                print(" %d" % ccnt, end='')
-            if c:
-                bcnt = os.path.getsize(filename)
-                totalc += bcnt
-                print(" %d" % bcnt, end='')
-            if L:
-                maxlno = lines.index(max(lines, key=lambda s: len(s.encode())))
-                s = lines[maxlno].strip('\n').encode()
-                lens = len(s)
-                lenunansi = len(list(filter(lambda x: x >= 0x80, s)))
-                maxl = lens - lenunansi / 3
-                totalL = max(maxl, totalL)
-                print(" %d" % maxl, end='')
+        if hasname:
             print(" %s" % filename)
-        if len(files) > 1:
-            if l:
-                print(" %d" % totall, end='')
-            if w:
-                print(" %d" % totalw, end='')
-            if m:
-                print(" %d" % totalm, end='')
-            if c:
-                print(" %d" % totalc, end='')
-            if L:
-                print(" %d" % totalL, end='')
-            print(" total")
+        else:
+            print()
+    if len(files) > 1:
+        if l:
+            print(" %d" % totall, end='')
+        if w:
+            print(" %d" % totalw, end='')
+        if m:
+            print(" %d" % totalm, end='')
+        if c:
+            print(" %d" % totalc, end='')
+        if L:
+            print(" %d" % totalL, end='')
+        print(" total")
 
 
 if __name__ == "__main__":
