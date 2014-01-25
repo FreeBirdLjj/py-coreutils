@@ -62,11 +62,10 @@ if __name__ == "__main__":
             z = True
 
     if args == []:
-        print("%s: missing operand" % prog)
-        print("Try '%s --help' for more information" % prog)
-    else:
-        for s in dirname(args):
-            if z:
-                print(s, end='')
-            else:
-                print(s)
+        common.missop(prog)
+
+    for s in dirname(args):
+        if z:
+            print(s, end='')
+        else:
+            print(s)

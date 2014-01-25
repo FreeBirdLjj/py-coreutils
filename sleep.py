@@ -53,9 +53,7 @@ if __name__ == "__main__":
         common.opterr(prog, wrngopt)
 
     if args == [] and opts == []:
-        print("%s: missing operand" % prog, file=sys.stderr)
-        print("Try '%s --help' for more information." % prog, file=sys.stderr)
-        exit(-1)
+        common.missop(prog)
 
     if opts != []:
         if len(sys.argv) > 2:

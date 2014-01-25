@@ -97,9 +97,7 @@ if __name__ == "__main__":
         common.opterr(prog, wrngopt)
 
     if opts == args == []:
-        print("%s: missing operand" % prog, file=sys.stderr)
-        print("Try 'seq --help' for more information", file=sys.stderr)
-        exit(-1)
+        common.missop(prog)
     if len(args) == 1:
         first = 1
         increment = 1
