@@ -80,7 +80,7 @@ def wc(files, c=True, m=False, l=True, L=False, w=True):
                     f = open(filename)
                 except FileNotFoundError:
                     print("%s: %s: No such file or directory"
-                          % (prog, filename))
+                          % (prog, filename), file=sys.stderr)
                     exit(-1)
             lines = f.readlines()
             if l:
@@ -159,5 +159,27 @@ if __name__ == "__main__":
                 L = True
             elif op == "-w" or op == "--words":
                 w = True
+            elif op == "--files0-from":
+                if len(opts) == 1:
+                    l = w = c = True
+                if args != []:
+                    print("%s: extra operand '%s'" % (prog, args[0]),
+                          file=sys.stderr)
+                    print("file operands cannot be combined with --files0-from",
+                          file=sys.stderr)
+                    print("Try '%s --help' for more information." % prog,
+                          file=sys.stderr)
+                    exit(-1)
+                else:
+                    if value == "-":
+                        f = sys.stdin
+                    else:
+                        try:
+                            f = open(value)
+                        except FileNotFoundError:
+                            print("%s: %s: No such file or directory"
+                                  % (prog, value), file=sys.stderr)
+                            exit(-1)
+                    args = f.read().split('\0')
 
     wc(args, c, m, l, L, w)
