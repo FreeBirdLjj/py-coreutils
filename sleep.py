@@ -49,8 +49,8 @@ if __name__ == "__main__":
         opts, args = getopt.getopt(sys.argv[1:], "",
                                    ["help",
                                     "version"])
-    except getopt.GetoptError:
-        common.opterr(prog)
+    except getopt.GetoptError as wrngopt:
+        common.opterr(prog, wrngopt)
 
     if args == [] and opts == []:
         print("%s: missing operand" % prog, file=sys.stderr)
@@ -59,10 +59,7 @@ if __name__ == "__main__":
 
     if opts != []:
         if len(sys.argv) > 2:
-            print("%s: invalid option -- '-'" % prog, file=sys.stderr)
-            print("Try '%s --help' for more information." % prog,
-                  file=sys.stderr)
-            exit(-1)
+            common.opterr(prog, getopt.GetoptError(None, opt="-"))
         op = opts[0][0]
         if op == "--help":
             usage(prog)
