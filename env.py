@@ -63,5 +63,4 @@ if __name__ == "__main__":
         for k, v in os.environ.items():
             print("%s=%s" % (k, v), end=endc)
     else:
-        # FIXME: os.system() will set environmental variable PWD.
-        os.system(functools.reduce(lambda a, b: a + " " + b, args))
+        os.execvp(args[0], args[0:])
