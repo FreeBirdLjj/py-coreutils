@@ -63,4 +63,10 @@ if __name__ == "__main__":
         for k, v in os.environ.items():
             print("%s=%s" % (k, v), end=endc)
     else:
-        os.execvp(args[0], args[0:])
+        for i in range(len(args)):
+            eql = args[i].find('=')
+            if eql == -1:
+                continue
+            os.putenv(args[i][:eql], args[i][eql+1:])
+            del args[i]
+        os.execvp(args[0], args)
