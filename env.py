@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import common
+import functools
 import getopt
+import os
 import sys
 
 
@@ -38,3 +40,28 @@ if __name__ == "__main__":
                                     "version"])
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
+
+    endc = '\n'
+    for op, value in opts:
+        if op == "--help":
+            usage(prog)
+            exit(0)
+        elif op == "--version":
+            common.version(prog)
+            exit(0)
+        elif op == "-i" or op == "--ignore-environment":
+            os.environ.clear()
+        elif op == "-0" or op == "--null":
+            endc = '\0'
+        elif op == "-u" or op == "--unset":
+            try:
+                os.environ.pop(value)
+            except KeyError:
+                pass
+    
+    if args == []:
+        for k, v in os.environ.items():
+            print("%s=%s" % (k, v), end=endc)
+    else:
+        # FIXME: os.system() will set environmental variable PWD.
+        os.system(functools.reduce(lambda a, b: a + " " + b, args))
