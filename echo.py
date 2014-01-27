@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import common
+import functools
 import getopt
 import re
 import sys
@@ -58,6 +59,7 @@ def echo(strs, n=False, e=False):
               ("\\f", '\f'), ("\\n", '\n'), ("\\r", '\r'), ("\\t", '\t'),
               ("\\v", '\v'))
     endl = '' if n else '\n'
+    i = 0
     for s in strs:
         if e:
             for c, escc in escseq:
@@ -79,6 +81,9 @@ def echo(strs, n=False, e=False):
                 print(s[:eofp], end=endl)
                 return
         print(s, end='')
+        i += 1
+        if i < len(strs):
+            print(' ', end='')
     print(end=endl)
 
 
@@ -104,3 +109,4 @@ if __name__ == "__main__":
             e = False
         else:
             echo(sys.argv[i:], n, e)
+            break
