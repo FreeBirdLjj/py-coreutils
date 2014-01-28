@@ -6,7 +6,7 @@ def version(prog):
 
 
 def opterr(prog, wrngopt):
-    print("%s: invalid option --\'%s\'" % (prog, wrngopt.opt), file=sys.stderr)
+    print("%s: invalid option -- \'%s\'" % (prog, wrngopt.opt), file=sys.stderr)
     print("Try \'%s --help\' for more information." % (prog), file=sys.stderr)
     exit(1)
 
