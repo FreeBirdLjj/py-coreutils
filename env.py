@@ -8,7 +8,8 @@ import sys
 
 
 def usage(prog):
-    print("Usage: %s [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]" % prog)
+    print("Usage: %s [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]"
+          % prog)
     print("Set each NAME to VALUE in the environment and run COMMAND.")
     print()
     print("  -i, --ignore-environment ",
@@ -58,7 +59,7 @@ if __name__ == "__main__":
                 os.environ.pop(value)
             except KeyError:
                 pass
-    
+
     if args == []:
         for k, v in os.environ.items():
             print("%s=%s" % (k, v), end=endc)
