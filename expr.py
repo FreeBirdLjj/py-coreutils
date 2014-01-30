@@ -64,15 +64,15 @@ def usage(prog):
     print("  + TOKEN                   ",
           "interpret TOKEN as a string, even if it is a")
     print("                            ",
-          "  keyword like 'match' or an operator like '/'")
+          "  keyword like \'match\' or an operator like \'/\'")
     print()
     print("  ( EXPRESSION )            ",
           "value of EXPRESSION")
     print()
     print("Beware that many operators need to be escaped or quoted for shells.")
     print("Comparisons are arithmetic if both ARGs are numbers, else lexicographical.")
-    print("Pattern matches return the string matched between \( and \) or null; if")
-    print("\( and \) are not used, they return the number of characters matched or 0.")
+    print("Pattern matches return the string matched between \\( and \\) or null; if")
+    print("\\( and \\) are not used, they return the number of characters matched or 0.")
     print()
     print("Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null")
     print("or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.")
@@ -89,3 +89,14 @@ if __name__ == "__main__":
                                     "version"])
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
+
+    for op, value in opts:
+        if op == "--help":
+            usage(prog)
+            exit(0)
+        elif op == "--version":
+            common.version(prog)
+            exit(0)
+
+    for i in range(len(args)):
+        pass
