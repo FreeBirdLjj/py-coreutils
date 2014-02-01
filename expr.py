@@ -2,6 +2,7 @@
 
 import common
 import getopt
+import re
 import sys
 
 
@@ -29,7 +30,7 @@ def usage(prog):
           "ARG1 is less than ARG2")
     print("  ARG1 <= ARG2     ",
           "ARG1 is less than or equal to ARG2")
-    print("  ARG1 = ARG2      ".
+    print("  ARG1 = ARG2      ",
           "ARG1 is equal to ARG2")
     print("  ARG1 != ARG2     ",
           "ARG1 is unequal to ARG2")
@@ -80,6 +81,50 @@ def usage(prog):
     print("For complete documentation, run:",
           "info coreutils 'expr invocation'")
 
+
+def expr(exprs):
+    if len(exprs) == 1:
+        return exprs[0]
+    if exprs[0] == "match":
+        pass
+    elif exprs[0] == "substr":
+        if len(exprs) < 4:
+            raise SyntaxError
+        string = exprs[1]
+        strlen = len(string)
+        try:
+            pos = int(exprs[2])
+            length = int(exprs[3])
+        except ValueError:
+            raise SyntaxError
+        if pos < 1:
+            raise SyntaxError
+        pos -= 1
+        substr = string[pos:pos + length]
+        if substr == "":
+            substr = None
+        exprs = [substr] + exprs[4:]
+        return expr(exprs)
+    elif exprs[0] == "index":
+        if len(exprs) < 3:
+            raise SyntaxError
+        string = exprs[1]
+        chars = exprs[2]
+        pattern = "[" + chars + "]"
+        result = re.compile(pattern).search(string)
+        if result == None:
+            exprs = [0] + exprs[3:]
+        else:
+            exprs = [result.start() + 1] + exprs[3:]
+        return expr(exprs)
+    elif exprs[0] == "length":
+        if len(exprs) < 2:
+            raise SyntaxError
+        string = exprs[1]
+        exprs = [len(string)] + exprs[2:]
+        return expr(exprs)
+
+
 if __name__ == "__main__":
     prog = sys.argv[0]
 
@@ -98,5 +143,19 @@ if __name__ == "__main__":
             common.version(prog)
             exit(0)
 
-    for i in range(len(args)):
-        pass
+    if args == []:
+        common.missop(prog)
+    try:
+        result = expr(args)
+        if result != None:
+            print(result)
+        else:
+            print()
+    except SyntaxError:
+        print("%s: syntax error" % prog)
+        exit(2)
+    except :
+        exit(3)
+
+    if result == None or result == 0:
+        exit(1)
