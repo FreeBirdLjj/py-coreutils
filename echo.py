@@ -58,32 +58,30 @@ def echo(strs, n=False, e=False):
     escseq = ((r"\\", '\\'), (r"\a", '\a'), (r"\b", '\b'), (r"\e", '\033'),
               (r"\f", '\f'), (r"\n", '\n'), (r"\r", '\r'), (r"\t", '\t'),
               (r"\v", '\v'))
-    endl = '' if n else '\n'
+    endc = '' if n else '\n'
     i = 0
     for s in strs:
         if e:
             s = functools.reduce(lambda rs, escpair: rs.replace(escpair[0],
                                                                 escpair[1]),
                                  escseq, s)
-            octdetres = octdet.findall(s)
-            for octs in octdetres:
+            for octs in octdet.findall(s):
                 newc = chr(ctoa[octs[-1]] +
                            (ctoa[octs[-2]] << 3) +
                            (ctoa[octs[-3]] << 6))
                 s = s.replace(octs, newc)
-            hexdetres = hexdet.findall(s)
-            for hexs in hexdetres:
+            for hexs in hexdet.findall(s):
                 newc = chr(ctoa[hexs[-1]] + (ctoa[hexs[-2]] << 4))
                 s = s.replace(hexs, newc)
             eofp = s.find("\\c")
             if eofp != -1:
-                print(s[:eofp], end=endl)
+                print(s[:eofp], end=endc)
                 return
         print(s, end='')
         i += 1
         if i < len(strs):
             print(' ', end='')
-    print(end=endl)
+    print(end=endc)
 
 
 if __name__ == "__main__":
