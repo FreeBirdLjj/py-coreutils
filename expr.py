@@ -48,7 +48,7 @@ def usage(prog):
           "arithmetic product of ARG1 and ARG2")
     print("  ARG1 / ARG2      ",
           "arithmetic quotient of ARG1 divided by ARG2")
-    print("  ARG1 %% ARG2      ",
+    print("  ARG1 % ARG2      ",
           "arithmetic remainder of ARG1 divided by ARG2")
     print()
     print("  STRING : REGEXP  ",
@@ -71,57 +71,133 @@ def usage(prog):
           "value of EXPRESSION")
     print()
     print("Beware that many operators need to be escaped or quoted for shells.")
-    print("Comparisons are arithmetic if both ARGs are numbers, else lexicographical.")
+    print("Comparisons are arithmetic if both ARGs are numbers,",
+          "else lexicographical.")
     print("Pattern matches return the string matched between \\( and \\) or null; if")
-    print("\\( and \\) are not used, they return the number of characters matched or 0.")
+    print("\\( and \\) are not used,",
+          "they return the number of characters matched or 0.")
     print()
-    print("Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null")
-    print("or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.")
+    print("Exit status is 0 if EXPRESSION is neither null nor 0,",
+          "1 if EXPRESSION is null")
+    print("or 0,",
+          "2 if EXPRESSION is syntactically invalid,",
+          "and 3 if an error occurred.")
     print()
     print("For complete documentation, run:",
           "info coreutils 'expr invocation'")
 
 
 def expr(exprs):
+    """
+    exprs should be a list of string, and is not [].
+    """
+
+    test_match = re.compile(r".*\\\(.*\\\).*")
+
+    def expr_match(string, pattern):
+        nonlocal test_match
+        if test_match.match(pattern) is None:
+            """
+            return a string which means the length of matched substring
+            """
+            pattern = pattern.replace("(", "\\(").replace(")", "\\)")
+            matches = re.match(pattern, string)
+            return "0" if matches is None else str(len(matches.group()))
+        else:
+            """
+            return the (last?) matched substring
+            """
+            pattern = pattern.replace("\\(", "(").replace("\\)", ")")
+            matches = re.match(pattern, string)
+            return "" if matches is None else matches.groups()[0]
+
+    def getstr():
+        if exprs == []:
+            raise SyntaxError
+        if exprs[0] == "+":
+            if len(exprs) == 1:
+                raise SyntaxError
+            string = exprs[1]
+            del exprs[:2]
+            return string
+        string = exprs[0]
+        del exprs[0]
+        return string
+
     if len(exprs) == 1:
         return exprs[0]
-    if exprs[0] == "match":
-        pass
+    if exprs[0] == "(":
+        rparen = -1
+        for i in range(len(exprs)):
+            if exprs[i] == ")":
+                rparen = i
+        subexprs = exprs[1:rparen]
+        del exprs[:rparen + 1]
+        exprs.insert(0, expr(subexprs))
+        return expr(exprs)
+    elif exprs[0] == ")":
+        raise SyntaxError
+    elif exprs[0] == "match":
+        del exprs[0]
+        string = getstr()
+        pattern = getstr()
+        exprs.insert(0, expr_match(string, pattern))
+        return expr(exprs)
     elif exprs[0] == "substr":
-        if len(exprs) < 4:
-            raise SyntaxError
-        string = exprs[1]
+        del exprs[0]
+        string = getstr()
         strlen = len(string)
         try:
-            pos = int(exprs[2])
-            length = int(exprs[3])
+            pos = int(getstr())
+            length = int(getstr())
         except ValueError:
-            raise SyntaxError
+            exprs.insert(0, "")
+            return expr(exprs)
         if pos < 1:
             raise SyntaxError
         pos -= 1
         substr = string[pos:pos + length]
-        if substr == "":
-            substr = None
-        exprs = [substr] + exprs[4:]
+        exprs.insert(0, substr)
         return expr(exprs)
     elif exprs[0] == "index":
-        if len(exprs) < 3:
-            raise SyntaxError
-        string = exprs[1]
-        chars = exprs[2]
+        del exprs[0]
+        string = getstr()
+        chars = getstr()
         pattern = "[" + chars + "]"
         result = re.compile(pattern).search(string)
-        if result == None:
-            exprs = [0] + exprs[3:]
+        if result is None:
+            exprs.insert(0, "0")
         else:
-            exprs = [result.start() + 1] + exprs[3:]
+            exprs.insert(0, str(result.start() + 1))
         return expr(exprs)
     elif exprs[0] == "length":
-        if len(exprs) < 2:
+        del exprs[0]
+        string = getstr()
+        exprs.insert(0, str(len(string)))
+        return expr(exprs)
+    else:
+        arg1 = getstr()
+        if exprs == []:
+            exprs = [arg1]
+            return expr(exprs)
+        op = exprs[0]
+        del exprs[0]
+        arg2 = getstr()
+        if op == "+":
+            result = int(arg1) + int(arg2)
+        elif op == "-":
+            result = int(arg1) - int(arg2)
+        elif op == "*":
+            result = int(arg1) * int(arg2)
+        elif op == "/":
+            result = int(arg1) / int(arg2)
+        elif op == "%":
+            result = int(arg1) % int(arg2)
+        elif op == ":":
+            result = expr_match(arg1, arg2)
+        else:
             raise SyntaxError
-        string = exprs[1]
-        exprs = [len(string)] + exprs[2:]
+        exprs.insert(0, str(result))
         return expr(exprs)
 
 
@@ -147,15 +223,13 @@ if __name__ == "__main__":
         common.missop(prog)
     try:
         result = expr(args)
-        if result != None:
-            print(result)
-        else:
-            print()
+        print(result)
     except SyntaxError:
         print("%s: syntax error" % prog)
         exit(2)
-    except :
-        exit(3)
+    except ValueError or TypeError:
+        print("%s: non-integer argument" % prog)
+        exit(2)
 
-    if result == None or result == 0:
+    if result == "" or result == "0":
         exit(1)
