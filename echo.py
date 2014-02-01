@@ -49,33 +49,32 @@ def usage(prog):
 
 
 def echo(strs, n=False, e=False):
-    octdet = re.compile("\\\\0[0-7]{3}")
-    hexdet = re.compile("\\\\x[\da-fA-F]{2}")
+    octdet = re.compile(r"\\0[0-7]{3}")
+    hexdet = re.compile(r"\\x[\da-fA-F]{2}")
     ctoa = {'0': 0x0, '1': 0x1, '2': 0x2, '3': 0x3, '4': 0x4, '5': 0x5,
             '6': 0x6, '7': 0x7, '8': 0x8, '9': 0x9, 'A': 0xA, 'a': 0xA,
             'B': 0xB, 'b': 0xB, 'C': 0xC, 'c': 0xC, 'D': 0xD, 'd': 0xD,
             'E': 0xE, 'e': 0xE, 'F': 0xF, 'f': 0xF}
-    escseq = (("\\\\", '\\'), ("\\a", '\a'), ("\\b", '\b'), ("\\e", '\033'),
-              ("\\f", '\f'), ("\\n", '\n'), ("\\r", '\r'), ("\\t", '\t'),
-              ("\\v", '\v'))
+    escseq = ((r"\\", '\\'), (r"\a", '\a'), (r"\b", '\b'), (r"\e", '\033'),
+              (r"\f", '\f'), (r"\n", '\n'), (r"\r", '\r'), (r"\t", '\t'),
+              (r"\v", '\v'))
     endl = '' if n else '\n'
     i = 0
     for s in strs:
         if e:
-            for c, escc in escseq:
-                s = s.replace(c, escc)
-            octdetres = re.findall(octdet, s)
-            if octdetres != []:
-                for octs in octdetres:
-                    newc = chr(ctoa[octs[-1]] +
-                               (ctoa[octs[-2]] << 3) +
-                               (ctoa[octs[-3]] << 6))
-                    s = s.replace(octs, newc)
-            hexdetres = re.findall(hexdet, s)
-            if hexdetres != []:
-                for hexs in hexdetres:
-                    newc = chr(ctoa[hexs[-1]] + (ctoa[hexs[-2]] << 4))
-                    s = s.replace(hexs, newc)
+            s = functools.reduce(lambda rs, escpair: rs.replace(escpair[0],
+                                                                escpair[1]),
+                                 escseq, s)
+            octdetres = octdet.findall(s)
+            for octs in octdetres:
+                newc = chr(ctoa[octs[-1]] +
+                           (ctoa[octs[-2]] << 3) +
+                           (ctoa[octs[-3]] << 6))
+                s = s.replace(octs, newc)
+            hexdetres = hexdet.findall(s)
+            for hexs in hexdetres:
+                newc = chr(ctoa[hexs[-1]] + (ctoa[hexs[-2]] << 4))
+                s = s.replace(hexs, newc)
             eofp = s.find("\\c")
             if eofp != -1:
                 print(s[:eofp], end=endl)
