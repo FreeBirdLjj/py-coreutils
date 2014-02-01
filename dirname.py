@@ -33,10 +33,7 @@ def usage(prog):
 def dirname(paths):
     def _dirname(path):
         result = os.path.dirname(path)
-        if result == '':
-            return '.'
-        else:
-            return result
+        return "." if result == "" else result
     return map(_dirname, paths)
 
 if __name__ == "__main__":
@@ -50,7 +47,7 @@ if __name__ == "__main__":
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
 
-    z = False
+    endc = '\n'
     for op, value in opts:
         if op == "--help":
             usage(prog)
@@ -59,13 +56,10 @@ if __name__ == "__main__":
             common.version(prog)
             exit(0)
         elif op == "-z" or op == "--zero":
-            z = True
+            endc = ''
 
     if args == []:
         common.missop(prog)
 
     for s in dirname(args):
-        if z:
-            print(s, end='')
-        else:
-            print(s)
+        print(s, end=endc)
