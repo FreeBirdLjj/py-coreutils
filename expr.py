@@ -124,81 +124,76 @@ def expr(exprs):
         del exprs[0]
         return string
 
-    if len(exprs) == 1:
-        return exprs[0]
-    if exprs[0] == "(":
-        rparen = -1
-        for i in range(len(exprs)):
-            if exprs[i] == ")":
-                rparen = i
-        subexprs = exprs[1:rparen]
-        del exprs[:rparen + 1]
-        exprs.insert(0, expr(subexprs))
-        return expr(exprs)
-    elif exprs[0] == ")":
-        raise SyntaxError
-    elif exprs[0] == "match":
-        del exprs[0]
-        string = getstr()
-        pattern = getstr()
-        exprs.insert(0, expr_match(string, pattern))
-        return expr(exprs)
-    elif exprs[0] == "substr":
-        del exprs[0]
-        string = getstr()
-        strlen = len(string)
-        try:
-            pos = int(getstr())
-            length = int(getstr())
-        except ValueError:
-            exprs.insert(0, "")
-            return expr(exprs)
-        if pos < 1:
+    while True:
+        if len(exprs) == 1:
+            return exprs[0]
+        if exprs[0] == "(":
+            rparen = -1
+            for i in range(len(exprs)):
+                if exprs[i] == ")":
+                    rparen = i
+            subexprs = exprs[1:rparen]
+            del exprs[:rparen + 1]
+            exprs.insert(0, expr(subexprs))
+        elif exprs[0] == ")":
             raise SyntaxError
-        pos -= 1
-        substr = string[pos:pos + length]
-        exprs.insert(0, substr)
-        return expr(exprs)
-    elif exprs[0] == "index":
-        del exprs[0]
-        string = getstr()
-        chars = getstr()
-        pattern = "[" + chars + "]"
-        result = re.compile(pattern).search(string)
-        if result is None:
-            exprs.insert(0, "0")
+        elif exprs[0] == "match":
+            del exprs[0]
+            string = getstr()
+            pattern = getstr()
+            exprs.insert(0, expr_match(string, pattern))
+        elif exprs[0] == "substr":
+            del exprs[0]
+            string = getstr()
+            strlen = len(string)
+            try:
+                pos = int(getstr())
+                length = int(getstr())
+            except ValueError:
+                exprs.insert(0, "")
+                continue
+            if pos < 1:
+                raise SyntaxError
+            pos -= 1
+            substr = string[pos:pos + length]
+            exprs.insert(0, substr)
+        elif exprs[0] == "index":
+            del exprs[0]
+            string = getstr()
+            chars = getstr()
+            pattern = "[" + chars + "]"
+            result = re.compile(pattern).search(string)
+            if result is None:
+                exprs.insert(0, "0")
+            else:
+                exprs.insert(0, str(result.start() + 1))
+        elif exprs[0] == "length":
+            del exprs[0]
+            string = getstr()
+            exprs.insert(0, str(len(string)))
         else:
-            exprs.insert(0, str(result.start() + 1))
-        return expr(exprs)
-    elif exprs[0] == "length":
-        del exprs[0]
-        string = getstr()
-        exprs.insert(0, str(len(string)))
-        return expr(exprs)
-    else:
-        arg1 = getstr()
-        if exprs == []:
-            exprs = [arg1]
-            return expr(exprs)
-        op = exprs[0]
-        del exprs[0]
-        arg2 = getstr()
-        if op == "+":
-            result = int(arg1) + int(arg2)
-        elif op == "-":
-            result = int(arg1) - int(arg2)
-        elif op == "*":
-            result = int(arg1) * int(arg2)
-        elif op == "/":
-            result = int(arg1) / int(arg2)
-        elif op == "%":
-            result = int(arg1) % int(arg2)
-        elif op == ":":
-            result = expr_match(arg1, arg2)
-        else:
-            raise SyntaxError
-        exprs.insert(0, str(result))
-        return expr(exprs)
+            arg1 = getstr()
+            if exprs == []:
+                exprs = [arg1]
+                continue
+            op = exprs[0]
+            del exprs[0]
+            arg2 = getstr()
+            if op == "+":
+                result = int(arg1) + int(arg2)
+            elif op == "-":
+                result = int(arg1) - int(arg2)
+            elif op == "*":
+                result = int(arg1) * int(arg2)
+            elif op == "/":
+                result = int(arg1) / int(arg2)
+            elif op == "%":
+                result = int(arg1) % int(arg2)
+            elif op == ":":
+                result = expr_match(arg1, arg2)
+            else:
+                raise SyntaxError
+            exprs.insert(0, str(result))
 
 
 if __name__ == "__main__":
