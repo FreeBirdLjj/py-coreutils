@@ -40,6 +40,22 @@ def usage(prog):
     print("For complete documentation, run:",
           "info coreutils 'head invocation'")
 
+
+def str2size(s):
+    size_scale = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+    if s.isdigit():
+        return int(s)
+    else:
+        # Here may raise ValueError and/or IndexErrorand
+        # and the caller should handle it
+        if s[-2].isdigit():
+            return int(s[-1]) * (1024 ** size_scale.index(s[-1]))
+        else:
+            if s[-1] != 'B':
+                raise SyntaxError
+            return int(s[-2]) * (1000 ** size_scale.index(s[-1]))
+
+
 if __name__ == "__main__":
     prog = sys.argv[0]
 
