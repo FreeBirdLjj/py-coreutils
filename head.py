@@ -41,20 +41,22 @@ def usage(prog):
           "info coreutils 'head invocation'")
 
 
-def str2size(s):
+def str2size(s: str):
     size_scale = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
-    if s.isdigit():
-        return int(s)
-    else:
-        # Here may raise ValueError and/or IndexErrorand
-        # and the caller should handle it
-        if s[-2].isdigit():
+    try:
+        if s.isdigit():
+            return int(s)
+        elif s[-2].isdigit():
             return int(s[-1]) * (1024 ** size_scale.index(s[-1]))
-        else:
-            if s[-1] != 'B':
-                raise SyntaxError
-            return int(s[-2]) * (1000 ** size_scale.index(s[-1]))
+        elif s[-1] != 'B':
+            raise SyntaxError
+        return int(s[-2]) * (1000 ** size_scale.index(s[-1]))
+    except (IndexError, ValueError):
+        raise SyntaxError
 
+
+def head(filenames: list of str, by_line: bool, k: int, v: bool):
+    return []
 
 if __name__ == "__main__":
     prog = sys.argv[0]
@@ -70,3 +72,30 @@ if __name__ == "__main__":
                                     "version"])
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
+
+    by_line = True
+    k = 10
+    v = True
+    for op, value in opts:
+        if op == "--help":
+            usage(prog)
+            exit(0)
+        elif op == "--version":
+            common.version(prog)
+            exit(0)
+        elif op == "-c" or op == "--bytes":
+            by_line = False
+            k = str2size(value)
+        elif op == "-n" or op == "--lines":
+            by_line = True
+            k = str2size(value)
+        elif op == "-q" or op == "--quiet" or op == "--silent":
+            v = False
+        elif op == "-v" or op == "--verbose":
+            v = True
+
+    try:
+        for line in head(args, by_line, k, v):
+            print(line)
+    except:
+        pass
