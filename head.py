@@ -2,6 +2,7 @@
 
 import common
 import getopt
+import os.path
 import sys
 
 
@@ -44,19 +45,28 @@ def usage(prog):
 def str2size(s: str):
     size_scale = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
     try:
-        if s.isdigit():
-            return int(s)
-        elif s[-2].isdigit():
+        if s[-1] == 'B':
+            return int(s[-2]) * (1000 ** size_scale.index(s[-1]))
+        elif s[-1] in size_scale:
             return int(s[-1]) * (1024 ** size_scale.index(s[-1]))
-        elif s[-1] != 'B':
-            raise SyntaxError
-        return int(s[-2]) * (1000 ** size_scale.index(s[-1]))
+        else:
+            return int(s)
     except (IndexError, ValueError):
         raise SyntaxError
 
 
-def head(filenames: list of str, by_line: bool, k: int, v: bool):
-    return []
+def head(filename: str, by_line: bool, k: int):
+    if by_line:
+        f = open(filename, "r")
+        buffer = f.readlines()
+        f.close()
+        return buffer[:k]
+    else:
+        f = open(filename, "rb")
+        buffer = f.read()[:k]
+        f.close()
+        return [buffer.decode()]
+
 
 if __name__ == "__main__":
     prog = sys.argv[0]
@@ -75,7 +85,7 @@ if __name__ == "__main__":
 
     by_line = True
     k = 10
-    v = True
+    dv = False
     for op, value in opts:
         if op == "--help":
             usage(prog)
@@ -90,12 +100,24 @@ if __name__ == "__main__":
             by_line = True
             k = str2size(value)
         elif op == "-q" or op == "--quiet" or op == "--silent":
+            dv = True
             v = False
         elif op == "-v" or op == "--verbose":
+            dv = True
             v = True
 
-    try:
-        for line in head(args, by_line, k, v):
-            print(line)
-    except:
-        pass
+    file_cnt = len(args)
+    if not dv:
+        v = file_cnt > 1
+    for i in range(file_cnt):
+        try:
+            fname = args[i]
+            if v:
+                print("==> %s <==" % fname)
+            for line in head(fname, by_line, k):
+                print(line, end='')
+            if i < file_cnt - 1:
+                print()
+        except FileNotFoundError:
+            print("%s: cannot open '%s' for reading: No such file or directory"
+                  % (prog, fname))
