@@ -9,7 +9,8 @@ import sys
 def usage(prog):
     print("Usage: %s [OPTION]... [FILE]..." % prog)
     print("Print the first 10 lines of each FILE to standard output.")
-    print("With more than one FILE, precede each with a header giving the file name.")
+    print("With more than one FILE,",
+          "precede each with a header giving the file name.")
     print("With no FILE, or when FILE is -, read standard input.")
     print()
     print("Mandatory arguments to long options are mandatory for short options too.")
@@ -57,15 +58,33 @@ def str2size(s: str):
 
 def head(filename: str, by_line: bool, k: int):
     if by_line:
-        f = open(filename, "r")
-        buffer = f.readlines()
-        f.close()
-        return buffer[:k]
+        if filename == "-":
+            if k >= 0:
+                for i in range(k):
+                    print(input())
+            else:
+                list(map(lambda s: print(s, end=''),
+                         sys.stdin.readlines()[:k]))
+        else:
+            f = open(filename, "r")
+            buffer = f.readlines()
+            f.close()
+            return buffer[:k]
     else:
-        f = open(filename, "rb")
-        buffer = f.read()[:k]
-        f.close()
-        return [buffer.decode()]
+        if filename == "-":
+            if k >= 0:
+                while k > 0:
+                    s = input()
+                    lens = len(s)
+                    print(s[:k])
+                    k -= lens
+            else:
+                print(input()[:k], end='')
+        else:
+            f = open(filename, "rb")
+            buffer = f.read()[:k]
+            f.close()
+            return [buffer.decode()]
 
 
 if __name__ == "__main__":
@@ -109,15 +128,20 @@ if __name__ == "__main__":
     file_cnt = len(args)
     if not dv:
         v = file_cnt > 1
-    for i in range(file_cnt):
-        try:
-            fname = args[i]
-            if v:
-                print("==> %s <==" % fname)
-            for line in head(fname, by_line, k):
-                print(line, end='')
-            if i < file_cnt - 1:
-                print()
-        except FileNotFoundError:
-            print("%s: cannot open '%s' for reading: No such file or directory"
-                  % (prog, fname))
+    if args != []:
+        for i in range(file_cnt):
+            try:
+                fname = args[i]
+                if v:
+                    print("==> %s <==" % fname)
+                for line in head(fname, by_line, k):
+                    print(line, end='')
+                if i < file_cnt - 1:
+                    print()
+            except FileNotFoundError:
+                print("%s: cannot open '%s' for reading: No such file or directory"
+                      % (prog, fname))
+    else:
+        if v:
+            print("==> standard input <==")
+        head("-", by_line, k)
