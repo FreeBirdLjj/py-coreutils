@@ -3,6 +3,7 @@
 import common
 import getopt
 import sys
+import time
 
 
 def usage(prog):
@@ -171,6 +172,23 @@ def usage(prog):
     print("For complete documentation, run:",
           "info coreutils \'date invocation\'")
 
+
+def mut_exc_op(prog):
+    print("%s: the options to specify dates for printing are mutually exclusive" % prog)
+    print("Try \'%s --help\' for more information." % prog)
+    exit(1)
+
+
+def mult_out_fmt(prog):
+    print("%s: multiple output formats specified" % prog)
+    exit(1)
+
+
+def unrec_op(prog, op):
+    print("%s: unrecognized option \'%s\'" % (prog, op))
+    print("Try \'%s --help\' for more information." % prog)
+    exit(1)
+
 if __name__ == "__main__":
     prog = sys.argv[0]
 
@@ -189,3 +207,63 @@ if __name__ == "__main__":
                                     "version"])
     except getopt.GetoptError as wrngopt:
         common.opterr(prog, wrngopt)
+
+    d = f = I = r = R = s = u = False
+    time_str = None
+    time_file = None
+    time_spec = None
+    time_ref = None
+    for op, value in opts:
+        if op == "--help":
+            usage(prog)
+            exit(0)
+        elif op == "--version":
+            common.version(prog)
+            exit(0)
+        elif op == "-d" or op == "--date":
+            if f or I or r or R or s or u:
+                mut_exc_op(prog)
+            else:
+                d = True
+                time_str = value
+        elif op == "-f" or op == "--file":
+            if d or I or r or R or s or u:
+                mut_exc_op(prog)
+            else:
+                f = True
+                time_file = value
+        elif op == "-I" or op == "--iso-8601":
+            if d or f or r or R or s or u:
+                mut_exc_op(prog)
+            else:
+                I = True
+                time_spec = value
+        elif op == "-r" or op == "--reference":
+            if d or f or I or R or s or u:
+                mut_exc_op(prog)
+            else:
+                r = True
+                time_ref = value
+        elif op == "-R" or op == "--rfc2822":
+            if d or f or I or r or s or u:
+                mut_exc_op(prog)
+            else:
+                R = True
+        elif op == "--rfc3339":
+            if d or f or I or r or s or u:
+                mut_exc_op(prog)
+            else:
+                R = True
+                time_spec = value
+        elif op == "-s" or op == "--set":
+            if d or f or I or r or R or u:
+                mut_exc_op(prog)
+            else:
+                s = True
+                time_str = value
+        elif op == "-u" or op == "--utc" or op == "--universal":
+            if d or f or I or r or R or s:
+                mut_exc_op(prog)
+            else:
+                u = True
+
