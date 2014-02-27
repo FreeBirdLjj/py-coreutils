@@ -189,6 +189,10 @@ def unrec_op(prog, op):
     print("Try \'%s --help\' for more information." % prog)
     exit(1)
 
+
+def find_date(date_str):
+    pass
+
 if __name__ == "__main__":
     prog = sys.argv[0]
 
@@ -209,7 +213,7 @@ if __name__ == "__main__":
         common.opterr(prog, wrngopt)
 
     d = f = I = r = R = s = u = False
-    time_str = None
+    date_str = None
     time_file = None
     time_spec = None
     time_ref = None
@@ -225,7 +229,7 @@ if __name__ == "__main__":
                 mut_exc_op(prog)
             else:
                 d = True
-                time_str = value
+                date_str = value
         elif op == "-f" or op == "--file":
             if d or I or r or R or s or u:
                 mut_exc_op(prog)
@@ -267,3 +271,5 @@ if __name__ == "__main__":
             else:
                 u = True
 
+    if d:
+        date_now = find_date(date_str)
